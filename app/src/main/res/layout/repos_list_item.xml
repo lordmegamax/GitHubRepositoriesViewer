@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:foreground="?android:attr/selectableItemBackground"
+              android:clickable="true"
+              android:focusable="true"
+              android:padding="@dimen/one"
+              android:layout_width="match_parent"
+              android:layout_height="@dimen/list_item_height">
+
+    <TextView
+        android:id="@+id/repos_list_item_repo_name"
+        android:textStyle="bold"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
+
+    <TextView
+        android:id="@+id/repos_list_item_repo_description"
+        android:lines="1"
+        android:ellipsize="end"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
+</LinearLayout>
