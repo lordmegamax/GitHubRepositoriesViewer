@@ -15,6 +15,6 @@ public class DataRepositoryImpl implements DataRepository {
 
     @Override
     public Flowable<List<Repo>> publicRepos() {
-        return gitHubApi.service.listPublicRepos();
+        return gitHubApi.getService().listPublicRepos();
     }
 }
