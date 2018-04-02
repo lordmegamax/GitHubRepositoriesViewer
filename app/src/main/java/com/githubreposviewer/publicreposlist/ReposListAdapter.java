@@ -15,17 +15,18 @@ import java.util.List;
 
 class ReposListAdapter extends RecyclerView.Adapter<ReposListAdapter.ReposViewHolder> {
 
-    private List<Repo> repos = new ArrayList<>();
-    private Context context;
+    private final List<Repo> repos;
+    private final LayoutInflater layoutInflater;
 
     public ReposListAdapter(Context context) {
-        this.context = context;
+        this.layoutInflater = LayoutInflater.from(context);
+        this.repos = new ArrayList<>();
     }
 
     @NonNull
     @Override
     public ReposViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        final View view = LayoutInflater.from(context).inflate(R.layout.repos_list_item, parent, false);
+        final View view = layoutInflater.inflate(R.layout.repos_list_item, parent, false);
         return new ReposViewHolder(view);
     }
 
