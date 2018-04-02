@@ -1,19 +1,19 @@
 package com.githubreposviewer;
 
 import android.app.Application;
-import com.githubreposviewer.data.DataRepository;
-import com.githubreposviewer.data.DataRepositoryImpl;
+import com.githubreposviewer.data.DataSource;
+import com.githubreposviewer.data.DataSourceImpl;
 
 public class App extends Application {
 
 
-    private static DataRepositoryImpl dataRepository;
+    private static DataSource dataSource;
 
-    public static DataRepository getDataRepository() {
-        if (dataRepository == null) {
-            dataRepository = new DataRepositoryImpl();
+    public static DataSource getDataSource() {
+        if (dataSource == null) {
+            dataSource = new DataSourceImpl();
         }
 
-        return dataRepository;
+        return dataSource;
     }
 }

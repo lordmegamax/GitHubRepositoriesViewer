@@ -1,77 +1,70 @@
 package com.githubreposviewer.publicreposlist;
 
 import android.os.Parcelable;
-import android.os.PersistableBundle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 import com.githubreposviewer.App;
 import com.githubreposviewer.R;
-import com.githubreposviewer.data.DataRepository;
 import com.githubreposviewer.data.pojo.Repo;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
-import io.reactivex.schedulers.Schedulers;
-import org.reactivestreams.Subscription;
 
 import java.util.List;
 
-public class ReposListActivity extends AppCompatActivity {
+public class ReposListActivity extends AppCompatActivity implements ReposContract.ReposView {
 
     private static final String TAG = "ReposListActivity";
     private static final String KEY_LAYOUT_MANAGER_STATE = "key_layout_manager_state";
 
-    private Disposable publicReposDisposable;
     private RecyclerView recyclerView;
     private ProgressBar progressBar;
+    private TextView errorTextView;
     private ReposListAdapter reposListAdapter;
+
+    private ReposPresenter presenter;
+
+    private Bundle lastSavedInstanceState;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_repos_list);
+        lastSavedInstanceState = savedInstanceState;
 
-        progressBar = findViewById(R.id.activity_repos_list_progress_bar);
-
-        initRecyclerView();
-        loadReposList(savedInstanceState);
+        initViews();
+        initPresenter();
     }
 
-    private void loadReposList(final Bundle savedInstanceState) {
-        DataRepository repo = App.getDataRepository();
-        publicReposDisposable = repo
-                .publicRepos()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe(new Consumer<Subscription>() {
-                    @Override
-                    public void accept(Subscription subscription) throws Exception {
-                        progressBar.setVisibility(View.VISIBLE);
-                    }
-                })
-                .subscribe(new Consumer<List<Repo>>() {
-                               @Override
-                               public void accept(List<Repo> gitHubRepositories) throws Exception {
-                                   reposListAdapter.replace(gitHubRepositories);
-                                   progressBar.setVisibility(View.INVISIBLE);
+    private void initViews() {
+        progressBar = findViewById(R.id.activity_repos_list_progress_bar);
+        errorTextView = findViewById(R.id.activity_repos_list_loading_error_text_view);
+        initRecyclerView();
+    }
 
-                                   restoreRecyclerViewState(savedInstanceState);
-                               }
-                           }
-                        , new Consumer<Throwable>() {
-                            @Override
-                            public void accept(Throwable throwable) throws Exception {
-                                Toast.makeText(getApplicationContext(), R.string.error_loading_public_repos, Toast.LENGTH_SHORT).show();
-                                progressBar.setVisibility(View.INVISIBLE);
-                            }
-                        });
+    private void initRecyclerView() {
+        recyclerView = findViewById(R.id.activity_repos_list_recycler_view);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
+
+        reposListAdapter = new ReposListAdapter(this);
+        recyclerView.setAdapter(reposListAdapter);
+    }
+
+    private void initPresenter() {
+        presenter = new ReposPresenter(this, App.getDataSource());
+        presenter.loadRepositories();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        presenter.detachView();
     }
 
     @Override
@@ -87,22 +80,23 @@ public class ReposListActivity extends AppCompatActivity {
         }
     }
 
-    private void initRecyclerView() {
-        recyclerView = findViewById(R.id.activity_repos_list_recycler_view);
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
+    @Override
+    public void showRepositories(List<Repo> repos) {
+        reposListAdapter.replace(repos);
+        toggleProgressIndicator(false);
+        errorTextView.setVisibility(View.GONE);
 
-        reposListAdapter = new ReposListAdapter(this);
-        recyclerView.setAdapter(reposListAdapter);
+        restoreRecyclerViewState(lastSavedInstanceState);
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    public void toggleProgressIndicator(boolean visible) {
+        progressBar.setVisibility(visible ? View.VISIBLE : View.GONE);
+    }
 
-        if (publicReposDisposable != null) {
-            publicReposDisposable.dispose();
-        }
+    @Override
+    public void showRepositoriesUnavailableError() {
+        toggleProgressIndicator(false);
+        errorTextView.setVisibility(View.VISIBLE);
     }
 }

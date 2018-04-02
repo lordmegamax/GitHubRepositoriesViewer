@@ -5,11 +5,11 @@ import io.reactivex.Flowable;
 
 import java.util.List;
 
-public class DataRepositoryImpl implements DataRepository {
+public class DataSourceImpl implements DataSource {
 
     private final GitHubApi gitHubApi;
 
-    public DataRepositoryImpl() {
+    public DataSourceImpl() {
         gitHubApi = new GitHubApi();
     }
 

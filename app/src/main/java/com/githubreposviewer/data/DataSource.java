@@ -5,6 +5,6 @@ import io.reactivex.Flowable;
 
 import java.util.List;
 
-public interface DataRepository {
+public interface DataSource {
     Flowable<List<Repo>> publicRepos();
 }
