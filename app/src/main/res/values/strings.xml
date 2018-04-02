@@ -1,4 +1,4 @@
 <resources>
-    <string name="app_name">GitHubReposViewer</string>
+    <string name="app_name">GitHub Public Repositories Viewer</string>
     <string name="error_loading_public_repos">Error loading public repositories from GitHub</string>
 </resources>

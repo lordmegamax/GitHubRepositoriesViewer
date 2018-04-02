@@ -4,22 +4,16 @@
               android:foreground="?android:attr/selectableItemBackground"
               android:clickable="true"
               android:focusable="true"
-              android:padding="@dimen/one"
+              android:padding="@dimen/two"
               android:layout_width="match_parent"
               android:layout_height="@dimen/list_item_height">
 
     <TextView
         android:id="@+id/repos_list_item_repo_name"
-        android:textStyle="bold"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"/>
+        style="@style/RepoTitle"/>
 
     <TextView
         android:id="@+id/repos_list_item_repo_description"
-        android:lines="1"
-        android:ellipsize="end"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"/>
+        style="@style/RepoDescription"/>
+
 </LinearLayout>
